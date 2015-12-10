@@ -1,4 +1,4 @@
-package com.score.senz.chatz;
+package com.score.senz.chatz.utils;
 
 import android.app.Activity;
 import android.content.res.Configuration;
