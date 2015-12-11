@@ -18,7 +18,7 @@ public class SenzorsDbHelper extends SQLiteOpenHelper {
     private static SenzorsDbHelper senzorsDbHelper;
 
     // If you change the database schema, you must increment the database version
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 19;
     private static final String DATABASE_NAME = "Senz.db";
 
     // data types, keywords and queries
@@ -36,6 +36,7 @@ public class SenzorsDbHelper extends SQLiteOpenHelper {
                     SenzorsDbContract.User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + "," +
                     SenzorsDbContract.User.COLUMN_NAME_USERNAME + TEXT_TYPE + "UNIQUE NOT NULL" + "," +
                     SenzorsDbContract.User.COLUMN_NAME_NAME + TEXT_TYPE +
+                    SenzorsDbContract.User.COLUMN_NAME_IMAGE + TEXT_TYPE + // 
                     " )";
 
     private static final String SQL_DELETE_SENZ =
@@ -76,6 +77,23 @@ public class SenzorsDbHelper extends SQLiteOpenHelper {
 
         db.execSQL(SQL_CREATE_SENZ);
         db.execSQL(SQL_CREATE_USER);
+    }
+     // takes user and bitmap as inputs and adds bitmap to image column of user as a base64 String
+    public void addImagetoUser(Bitmap image, String userName)
+    {
+
+        // makes bitmap into a bytearray
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        //makes the bytearray into a base64 String
+        String EncodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        // sends encoded image to row of specified userName
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE " + SenzorsDbContract.User.TABLE_NAME +
+                " SET " + SenzorsDbContract.User.COLUMN_NAME_IMAGE + " = '" + EncodedImage +
+                "' WHERE " + SenzorsDbContract.User.COLUMN_NAME_USERNAME + " = '" + userName + "';");
     }
 
     /**
